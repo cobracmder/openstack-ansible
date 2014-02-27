@@ -6,10 +6,12 @@
   vars:
     component: neutron
     packages:
+        - neutron-plugin-linuxbridge-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent
     services:
+        - neutron-plugin-linuxbridge-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent
@@ -41,23 +43,6 @@
         group: root 
         mode: 0755
 
-    - name: ensure ovs bridge for gateway br-ex present
-      command: /usr/bin/ovs-vsctl -- --may-exist add-br br-ex
-
-    - name: ensure br-ex has external nic enslaved
-      command: /usr/bin/ovs-vsctl -- --may-exist add-port br-ex {{ hostvars[groups['neutron-network'][0]]|find_netdev(external_network) }}
-
-    - name: ensure script to configure network is in place
-      template: 
-        src: templates/etc/network/if-pre-up.d/configure_br-ex
-        dest: /etc/network/if-pre-up.d/configure_br-ex
-        owner: root 
-        group: root 
-        mode: 0755
-
-    - name: ensure configure script is run at least once
-      command: /etc/network/if-pre-up.d/configure_br-ex
-
     - name: ensure {{ component }}-network packages are installed
       apt: 
         pkg: "{{ item }}"
@@ -85,6 +70,14 @@
         group: "{{ component }}"
         mode: 0600
       with_items: config_files
+
+    - name: update linuxbridge_conf.ini from template
+      template: 
+        src: templates/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini 
+        dest: /etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini 
+        owner: neutron 
+        group: neutron 
+        mode: 0600
 
     - name: ensure services are started and enabled
       service: 
