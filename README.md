@@ -1,5 +1,7 @@
 # OpenStack on Ansible with Vagrant
 
+This repository contains the Ubuntu variant running Mellanox Neutron Plugin.
+
 This repository contains script that will deploy OpenStack into Vagrant virtual
 machines. These scripts are based on the [Official OpenStack
 Docmentation](http://docs.openstack.org/), havana release, except where
