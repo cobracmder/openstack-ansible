@@ -5,90 +5,64 @@
   gather_facts: True
   tasks:
 
-    - name: update apt cache
-      apt: 
-        update_cache: yes
+    - name: stop Network Manager
+      service: 
+        name: NetworkManager
+        state: stopped
+        enabled: no
+
+    - name: start network
+      service: 
+        name: network
+        state: started
+        enabled: yes
 
     - name: ensure required base packages are present
-      apt: 
-        pkg: "{{ item }}" 
+      yum: 
+        name: "{{ item }}" 
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items:
-        - chrony
-        - python-mysqldb
-        - python-software-properties
+        - ntp
+        - mysql
+        - MySQL-python
 
-    - name: ensure needed repositories are present
-      command: apt-add-repository -y "{{ item }}"
-      with_items: openstack_repositories
-
-    - name: upgrade software packages to latest version
-      apt: 
-        update_cache: yes
-        upgrade: dist 
-
-    - name: autoremove unneeded packages
-      command: apt-get -y autoremove
-
-    - name: register running kernel version
-      command: uname -r
-      register: running_kernel
-
-    - name: register installed kernel version
-      shell: dpkg -l | grep "linux-image-[0-9]" | sort | tail -1 | perl -ane 'print substr($F[1], 12), "\n"'
-      register: installed_kernel
-
-    - name: reboot if kernel version has changed
-      include: reboot.yaml
-      when: installed_kernel.stdout != running_kernel.stdout
-
-    - name: ensure chrony server is stopped
+    - name: start ntpd
       service: 
-        name: chrony
-        state: stopped
-
-    - name: install chrony.conf 
-      template: 
-        src: templates/etc/chrony/chrony.conf 
-        dest: /etc/chrony/chrony.conf 
-        owner: root 
-        group: root 
-        mode: 0644
+        name: ntpd
+        state: started
+        enabled: yes
 
     - name: set clocks to public ntp server
       command: ntpdate {{ external_ntp_host }}
       ignore_errors: yes
 
-    # register: ntpdate_result
-    # until: ntpdate_result|success
-    # retries: 5
-    # delay: 5
-
-    #- name: make sure chrony server is started and enabled
-    #  service: 
-    #    name: chrony
-    #    state: restarted 
-    #    enabled: yes
-    #  when: "'ntpserver' in group_names"
-
-    #- name: set clocks to local chrony server
-    #  command: ntpdate {{ ntp_host }}
-    #  register: ntpdate_result
-    #  when: "'ntpserver' not in group_names"
-    #  until: ntpdate_result|success
-    #  retries: 5
-    #  delay: 5
-
     - name: save system clock to hardware
       command: hwclock --systohc
 
-    - name: make sure chrony is started and enabled everywhere
-      service: 
-        name: chrony
-        state: restarted 
-        enabled: yes
+    - name: register RDO openstack repo
+      yum:
+          name: http://repos.fedorapeople.org/repos/openstack/openstack-havana/rdo-release-havana-6.noarch.rpm
+          state: present
+
+    - name: install openstack repo keys
+      yum:
+          name: http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+          state: present
+
+    - name: install base openstack packages
+      yum:
+          name: "{{ item }}"
+          state: present
+      with_items:
+          - openstack-utils
+          - openstack-selinux
+
+    - name: upgrade current packages to latest version
+      yum: 
+        name: *
+        state: latest 
+
+    - include: reboot.yaml
 
 - include: virtualbox.yaml
   when: ansible_virtualization_type|defined and ansible_virtualization_type == "virtualbox"

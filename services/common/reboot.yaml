@@ -1,5 +1,5 @@
 ---
-- name: reboot when there has been a kernel upgrade
+- name: reboot server
   command: /sbin/reboot
 
 - name: wait for reboot

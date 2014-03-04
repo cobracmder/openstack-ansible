@@ -6,11 +6,9 @@
   tasks:
 
     - name: ensure mysql-server is installed
-      apt: 
-        pkg: mysql-server 
+      yum: 
+        name: mysql-server 
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
 
     - name: ensure mysql is stopped
       service: 
