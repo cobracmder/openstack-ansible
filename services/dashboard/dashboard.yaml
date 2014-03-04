@@ -3,32 +3,29 @@
   hosts: dashboard
   sudo: True
   gather_facts: True
+  vars:
+    component: dashboard
+    packages:
+      - memcached
+      - python-memchached
+      - mod_wsgi
+      - "openstack-{{ component }}"
+    services:
+      - httpd
+      - memcached
   tasks:
 
-    - name: ensure packages are installed
-      apt: 
-        pkg: "{{ item }}" 
+    - name: ensure {{ component }} packages are installed
+      yum: 
+        name: "{{ item }}" 
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
-      with_items: 
-        - libapache2-mod-wsgi
-        - memcached 
-        - openstack-dashboard 
+      with_items: packages 
 
-    - name: ensure ubuntu theme is removed
-      apt: 
-        pkg: openstack-dashboard-ubuntu-theme 
-        state: absent 
-        purge: yes
-
-    - name: ensure services are stopped
+    - name: ensure {{ component }} services are stopped
       service:
         name: "{{ item }}"
         state: stopped
-      with_items:
-        - memcached
-        - apache2
+      with_items: services
 
     - name: update memcached.conf from template
       template:
@@ -46,11 +43,9 @@
         group: root
         mode: 0644
 
-    - name: ensure services are started and enabled
+    - name: ensure {{ component }} services are started and enabled
       service:
         name: "{{ item }}"
         state: restarted
         enabled: yes
-      with_items:
-        - memcached
-        - apache2
+      with_items: services

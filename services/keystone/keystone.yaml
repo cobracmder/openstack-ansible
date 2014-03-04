@@ -6,20 +6,19 @@
   vars:
     component: keystone
     packages:
-      - "{{ component }}"
+      - "openstack-{{ component }}"
+      - "python-{{ component }}client"
     services:
-      - "{{ component }}"
+      - "openstack-{{ component }}"
     config_files:
       - "{{ component }}.conf"
 
   tasks:
 
     - name: ensure {{ component }} packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
     - name: ensure services are stopped

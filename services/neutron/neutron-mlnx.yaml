@@ -6,17 +6,14 @@
   vars:
     component: neutron
     subcomponent: mlnx
-    download_url: http://www.mellanox.com/downloads/solutions/openstack/havana/debian/
-    downloads:
-      - eswitchd_0.6-1_amd64.deb
-      - python-mlnxvif_0.6-1_all.deb
-      - python-mlnx-dnsmasq_0.1-1_all.deb
+    download_repo: http://www.mellanox.com/downloads/solutions/openstack/havana/repo/mlnx-havana/mlnx-havana.repo
     packages:
       - eswitchd
-      - python-mlnxvif
-      - python-mlnx-dnsmasq
-      - neutron-plugin-mlnx-agent
+      - mlnxvif
+      - mlnx-dnsmasq
+      - openstack-neutron-mellanox
     services:
+      - openstack-nova-compute
       - eswitchd
       - neutron-plugin-mlnx-agent
     config_files:
@@ -48,27 +45,15 @@
         value: "0"
         state: present
 
-    - name: ensure {{ downloads }} packages are downloaded in /tmp
+    - name: ensure Mellanox repo is downloaded in /etc/yum.repos.d
       get_url:
-        url: {{ download_url }}/{{ item }}
-        dest: /tmp/{{ item }}
-      with_items: downloads
-
-    - name: ensure {{ downloads }} packages are installed
-      command: dpkg --skip-same-version -i /tmp/{{ item }}
-      register: dpkg_result
-      changed_when: "dpkg_result.stdout.startswith('Selecting')"
-      with_items: downloads
-
-    - name: fix any dependencies, if needed
-      command: apt-get install -f
+        url: {{ download_repo }}
+        dest: /etc/yum.repos.d/mlnx-havana.repo
 
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
     - name: ensure services are stopped

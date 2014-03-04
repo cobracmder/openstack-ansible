@@ -7,8 +7,13 @@
     component: neutron
     subcomponent: server
     packages:
-      - "{{ component }}-{{ subcomponent }}"
+      - "openstack-{{ component }}"
+      - "python-{{ component }}"
+      - "python-{{ component }}client"
     services:
+      - "openstack-nova-api"
+      - "openstack-nova-scheduler"
+      - "openstack-nova-conductor"
       - "{{ component }}-{{ subcomponent }}"
     config_files:
       - "{{ component }}.conf"
@@ -17,11 +22,9 @@
   tasks:
 
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
     - name: ensure services are stopped

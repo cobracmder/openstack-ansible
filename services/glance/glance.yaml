@@ -6,24 +6,22 @@
   vars:
     component: glance 
     packages:
-      - glance
+      - "openstack-{{ component }}"
     services:
-      - glance-api
-      - glance-registry
+      - "openstack-{{ component }}-api"
+      - "openstack-{{ component }}-registry"
     config_files:
-      - glance-api.conf
-      - glance-api-paste.ini
-      - glance-registry.conf
-      - glance-registry-paste.ini
+      - "{{ component }}-api.conf"
+      - "{{ component }}-api-paste.ini"
+      - "{{ component }}-registry.conf"
+      - "{{ component }}-registry-paste.ini"
 
   tasks:
 
     - name: ensure {{ component }} packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
     - name: ensure services are stopped

@@ -1,3 +1,7 @@
+Migrate:
+Swift
+Ceilometer
+
 * ceilometer signing dir?
 * synchronize/delegate_to to tighten up swift config security...
 * all rabbit/mongo should reference/include install instructions...

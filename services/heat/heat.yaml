@@ -6,13 +6,13 @@
   vars:
     component: heat
     packages:
-      - "{{ component }}-api"
-      - "{{ component }}-api-cfn"
-      - "{{ component }}-engine"
+      - "openstack-{{ component }}-api"
+      - "openstack-{{ component }}-api-cfn"
+      - "openstack-{{ component }}-engine"
     services:
-      - "{{ component }}-api"
-      - "{{ component }}-api-cfn"
-      - "{{ component }}-engine"
+      - "openstack-{{ component }}-api"
+      - "openstack-{{ component }}-api-cfn"
+      - "openstack-{{ component }}-engine"
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
@@ -20,14 +20,12 @@
   tasks:
 
     - name: ensure {{ component }} packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
-    - name: ensure services are stopped
+    - name: ensure {{ component }} services are stopped
       service: 
         name: "{{ item }}"
         state: stopped
@@ -50,7 +48,7 @@
     - name: ensure database is synced
       command: /usr/bin/{{ component }}-manage db_sync
 
-    - name: ensure services are started and enabled
+    - name: ensure {{ component }} services are started and enabled
       service: 
         name: "{{ item }}"
         state: restarted 

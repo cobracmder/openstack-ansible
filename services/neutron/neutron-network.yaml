@@ -6,15 +6,15 @@
   vars:
     component: neutron
     packages:
-        - neutron-plugin-linuxbridge-agent
-        - neutron-dhcp-agent
-        - neutron-metadata-agent
-        - neutron-l3-agent
+        - openstack-neutron
+        - mlnx-dnsmasq
     services:
-        - neutron-plugin-linuxbridge-agent
+        - neutron-linuxbridge-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent
+        - opensmd
+        - openibd
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
@@ -44,11 +44,9 @@
         mode: 0755
 
     - name: ensure {{ component }}-network packages are installed
-      apt: 
-        pkg: "{{ item }}"
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items: packages
 
     - name: ensure services are stopped
@@ -78,6 +76,20 @@
         owner: neutron 
         group: neutron 
         mode: 0600
+
+    - name: copy ipoibd and override /sbin/ipoibd
+      get_url:
+        url: http://www.mellanox.com/downloads/solutions/openstack/havana/ipoibd
+        dest: /sbin/ipoibd
+
+    - name: copy linuxbridge patch
+      get_url:
+        url: http://www.mellanox.com/downloads/solutions/openstack/havana/patches/linuxbridge_neutron_agent.py.patch
+        dest: /tmp/linux_bridge_agent.py.patch
+
+    - name: apply linuxbridge patch
+      command: patch -p1 < /tmp/linux_bridge_agent.py.patch
+        chdir: /usr/lib/python2.6/site-packages/neutron/plugins/linuxbridge/agent
 
     - name: ensure services are started and enabled
       service: 

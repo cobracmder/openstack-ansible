@@ -6,25 +6,29 @@
   hosts: nova-compute
   sudo: True
   gather_facts: True
+  vars:
+    component: nova-compute
+    services:
+      - "openstack-{{ component }}"
+      - libvirtd 
+      - messagebus
   tasks:
 
     - name: ensure /boot/vmlinuz is world-readable
       shell: chmod 0644 /boot/vmlinuz*
 
-    - name: ensure nova-compute packages are installed
-      apt: 
-        pkg: "{{ item }}"
+    - name: ensure {{ component }} packages are installed
+      yum: 
+        name: "{{ item }}"
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
       with_items:
         - "{{ nova_compute_package }}"
-        - python-guestfs
       
-    - name: ensure services are stopped
+    - name: ensure {{ component }} services are stopped
       service: 
-        name: nova-compute 
+        name: "{{ item }}"
         state: stopped
+      with_items: services
 
     - name: ensure nova.conf file is present
       template: 
@@ -42,9 +46,9 @@
         group: nova 
         mode: 0600
 
-    - name: ensure compute service is started and enabled
+    - name: ensure {{ component }} services are started and enabled
       service: 
-        name: nova-compute 
+        name: "{{ item }}"
         state: restarted 
         enabled: yes
-
+      with_items: services
