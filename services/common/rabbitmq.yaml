@@ -6,11 +6,9 @@
   tasks:
 
     - name: ensure rabbitmq server is installed
-      apt: 
-        pkg: rabbitmq-server 
+      yum: 
+        name: rabbitmq-server 
         state: latest 
-        update_cache: yes 
-        cache_valid_time: 600
 
     - name: ensure rabbitmq server is stopped
       service: 
