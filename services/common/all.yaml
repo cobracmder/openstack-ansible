@@ -59,7 +59,7 @@
 
     - name: upgrade current packages to latest version
       yum: 
-        name: *
+        name: '*'
         state: latest 
 
     - include: reboot.yaml
