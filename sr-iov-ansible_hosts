@@ -49,7 +49,7 @@ nova-compute
 [nova-controller]
 controller
 
-[nova-compute]
+[nova-compute:children]
 compute
 
 [neutron:children]
