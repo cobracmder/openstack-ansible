@@ -10,12 +10,14 @@
         name: NetworkManager
         state: stopped
         enabled: no
+      ignore_errors: yes
 
     - name: start network
       service: 
         name: network
         state: started
         enabled: yes
+      ignore_errors: yes
 
     - name: ensure required base packages are present
       yum: 
@@ -57,10 +59,11 @@
           - openstack-utils
           - openstack-selinux
 
-    - name: upgrade current packages to latest version
-      yum: 
-        name: '*'
-        state: latest 
+#    - name: upgrade current packages to latest version
+#      yum: 
+#        name: '*'
+#        state: latest 
+#      ignore_errors: yes
 
     - include: reboot.yaml
 
