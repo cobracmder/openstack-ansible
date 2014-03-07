@@ -47,7 +47,7 @@
 
     - name: ensure Mellanox repo is downloaded in /etc/yum.repos.d
       get_url:
-        url: {{ download_repo }}
+        url: "{{ download_repo }}"
         dest: /etc/yum.repos.d/mlnx-havana.repo
 
     - name: ensure {{ component }}-{{ subcomponent }} packages are installed

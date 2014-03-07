@@ -79,17 +79,16 @@
 
     - name: copy ipoibd and override /sbin/ipoibd
       get_url:
-        url: http://www.mellanox.com/downloads/solutions/openstack/havana/ipoibd
+        url: 'http://www.mellanox.com/downloads/solutions/openstack/havana/ipoibd'
         dest: /sbin/ipoibd
 
     - name: copy linuxbridge patch
       get_url:
-        url: http://www.mellanox.com/downloads/solutions/openstack/havana/patches/linuxbridge_neutron_agent.py.patch
+        url: 'http://www.mellanox.com/downloads/solutions/openstack/havana/patches/linuxbridge_neutron_agent.py.patch'
         dest: /tmp/linux_bridge_agent.py.patch
 
     - name: apply linuxbridge patch
-      command: patch -p1 < /tmp/linux_bridge_agent.py.patch
-        chdir: /usr/lib/python2.6/site-packages/neutron/plugins/linuxbridge/agent
+      shell: 'patch -p1 < /tmp/linux_bridge_agent.py.patch chdir=/usr/lib/python2.6/site-packages/neutron/plugins/linuxbridge/agent'
 
     - name: ensure services are started and enabled
       service: 
