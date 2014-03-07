@@ -12,20 +12,20 @@
 
     - name: ensure mysql is stopped
       service: 
-        name: mysql 
+        name: mysqld
         state: stopped
 
     - name: install mysql config file that binds to management network interface
       template: 
         src: templates/etc/mysql/my.cnf 
-        dest: /etc/mysql/my.cnf 
+        dest: /etc/my.cnf 
         owner: root 
         group: root 
         mode: 0644
 
     - name: ensure mysql is started and enabled
       service: 
-        name: mysql 
+        name: mysqld
         state: restarted 
         enabled: yes
 
