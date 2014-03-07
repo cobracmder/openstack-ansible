@@ -1,0 +1,71 @@
+controller ansible_ssh_host=ocp00004
+
+[compute]
+ocp00005
+ocp00006
+ocp00007
+ocp00011
+ocp00012
+ocp00013
+
+[all:vars]
+external_ntp_host = pool.ntp.org
+
+management_network = 192.168.1.0/24
+api_network = 192.168.1.0/24
+
+external_network_name = public
+
+[neutron:vars]
+data_network = 172.16.0.0/24
+external_network = 172.16.0.0/24
+external_network_gateway_ip = 172.16.0.253
+external_network_dns_nameservers = 8.8.8.8
+external_network_allocation_pool_start = 172.16.0.1
+external_network_allocation_pool_end = 172.16.0.250
+
+[mysql]
+controller
+
+[mongodb]
+controller
+
+[rabbitmq]
+controller
+
+[ntpserver]
+controller
+
+[keystone]
+controller
+
+[glance]
+controller
+
+[nova:children]
+nova-controller
+nova-compute
+
+[nova-controller]
+controller
+
+[nova-compute]
+compute
+
+[neutron:children]
+neutron-api
+neutron-network
+nova-compute
+
+[neutron-api]
+controller
+
+[neutron-network]
+controller
+
+[dashboard]
+controller
+
+[frontend]
+controller
+
