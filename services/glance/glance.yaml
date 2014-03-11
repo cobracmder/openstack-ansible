@@ -47,6 +47,14 @@
     - name: ensure database is synced
       command: /usr/bin/{{ component }}-manage db_sync
 
+    - name: ensure {{ component }} logs have correct owner
+      file:
+        path: "/var/log/{{ component }}"
+        recurse: yes
+        state: directory
+        group: "{{ component }}"
+        owner: "{{ component }}"
+
     - name: ensure services are started and enabled
       service: 
         name: "{{ item }}"
