@@ -7,6 +7,7 @@
     component: neutron
     packages:
         - openstack-neutron
+        - openstack-neutron-linuxbridge
         - mlnx-dnsmasq
     services:
         - neutron-linuxbridge-agent
