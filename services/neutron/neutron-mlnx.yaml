@@ -68,6 +68,14 @@
         dest: /var/lib/{{ component }}/{{ component }}.sqlite 
         state: absent
 
+    - name: ensure mlnx plugins directory exists
+      file:
+        path: /etc/{{ component }}/plugins/mlnx
+        owner: "{{ component }}"
+        group: "{{ component }}"
+        recurse: yes
+        state: directory
+
     - name: update configuration files from templates
       template: 
         src: templates/etc/{{ component }}/{{ item }}
@@ -81,8 +89,8 @@
       template: 
         src: templates/etc/neutron/plugins/mlnx/mlnx_conf.ini 
         dest: /etc/neutron/plugins/mlnx/mlnx_conf.ini 
-        owner: neutron 
-        group: neutron 
+        owner: "{{ component }}"
+        group: "{{ component }}"
         mode: 0600
 
     - name: make sure symlink to mlnx_conf.ini exists
