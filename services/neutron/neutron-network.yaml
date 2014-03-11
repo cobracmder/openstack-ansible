@@ -9,6 +9,7 @@
         - openstack-neutron
         - openstack-neutron-linuxbridge
         - mlnx-dnsmasq
+        - patch
     services:
         - neutron-linuxbridge-agent
         - neutron-dhcp-agent
