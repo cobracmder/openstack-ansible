@@ -24,24 +24,24 @@
 
   tasks:
 
-    - name: ensure iptables configuration is present
-      template: 
-        src: templates/etc/iptables.rules 
-        dest: /etc/iptables.rules 
-        owner: root 
-        group: root 
-        mode: 0644
-
-    - name: load iptables rules
-      shell: /sbin/iptables-restore < /etc/iptables.rules
-
-    - name: ensure iptables configuration is loaded at boot
-      template: 
-        src: templates/etc/network/if-pre-up.d/iptablesload 
-        dest: /etc/network/if-pre-up.d/iptablesload 
-        owner: root 
-        group: root 
-        mode: 0755
+#    - name: ensure iptables configuration is present
+#      template: 
+#        src: templates/etc/iptables.rules 
+#        dest: /etc/iptables.rules 
+#        owner: root 
+#        group: root 
+#        mode: 0644
+#
+#    - name: load iptables rules
+#      shell: /sbin/iptables-restore < /etc/iptables.rules
+#
+#    - name: ensure iptables configuration is loaded at boot
+#      template: 
+#        src: templates/etc/network/if-pre-up.d/iptablesload 
+#        dest: /etc/network/if-pre-up.d/iptablesload 
+#        owner: root 
+#        group: root 
+#        mode: 0755
 
     - name: ensure {{ component }}-network packages are installed
       yum: 
