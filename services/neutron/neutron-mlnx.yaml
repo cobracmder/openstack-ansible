@@ -15,7 +15,7 @@
     services:
       - openstack-nova-compute
       - eswitchd
-      - neutron-plugin-mlnx-agent
+      - neutron-mlnx-agent
     config_files:
       - api-paste.ini
 
