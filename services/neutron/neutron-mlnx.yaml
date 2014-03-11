@@ -90,6 +90,14 @@
         dest: /etc/neutron/plugin.ini 
         state: link
 
+    - name: ensure {{ component }} logs have correct owner
+      file:
+        path: "/var/log/{{ component }}"
+        recurse: yes
+        state: directory
+        group: "{{ component }}"
+        owner: "{{ component }}"
+
     - name: ensure neutron mlnx services are started and enabled
       service: 
         name: "{{ item }}"
