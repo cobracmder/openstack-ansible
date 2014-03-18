@@ -1,0 +1,52 @@
+---
+ name: Stop All OpenStack Services
+  hosts: all
+  sudo: True
+  gather_facts: True
+  vars:
+    services:
+      - openstack-keystone
+      - openstack-glance-api
+      - openstack-glance-registry
+      - openstack-nova-api
+      - openstack-nova-cert
+      - openstack-nova-compute
+      - openstack-nova-conductor
+      - openstack-nova-consoleauth
+      - openstack-nova-novncproxy
+      - openstack-nova-scheduler
+      - eswitchd
+      - neutron-server
+      - neutron-linuxbridge-agent
+      - neutron-mlnx-agent
+      - neutron-dhcp-agent
+      - neutron-metadata-agent
+      - neutron-l3-agent
+  tasks:
+      - name: Stopping openstack services
+        service:
+          name: "{{ item }}"
+          state: stopped
+        with_items: services
+        ignore_errors: yes
+
+- name: Remove Database information
+  hosts: mysql
+  sudo: True
+  gather_facts: True
+  vars:
+    services:
+      - mysqld
+  tasks:
+    - name: stop services
+      service: 
+        name: "{{ item }}"
+        state: stopped
+        enabled: yes
+      with_items: services
+    - name: remove mysql datadir
+      file:
+        name: /var/lib/mysql
+        state: absent
+
+-
