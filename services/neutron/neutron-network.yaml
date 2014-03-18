@@ -11,12 +11,12 @@
         - mlnx-dnsmasq
         - patch
     services:
+        - openibd
+        - opensmd
         - neutron-linuxbridge-agent
         - neutron-dhcp-agent
         - neutron-metadata-agent
         - neutron-l3-agent
-        - opensmd
-        - openibd
     config_files:
       - "{{ component }}.conf"
       - api-paste.ini
