@@ -1,5 +1,5 @@
 ---
- name: Stop All OpenStack Services
+- name: Stop All OpenStack Services
   hosts: all
   sudo: True
   gather_facts: True
@@ -23,12 +23,12 @@
       - neutron-metadata-agent
       - neutron-l3-agent
   tasks:
-      - name: Stopping openstack services
-        service:
-          name: "{{ item }}"
-          state: stopped
-        with_items: services
-        ignore_errors: yes
+    - name: Stopping openstack services
+      service:
+        name: "{{ item }}"
+        state: stopped
+      with_items: services
+      ignore_errors: yes
 
 - name: Remove Database information
   hosts: mysql
@@ -49,4 +49,3 @@
         name: /var/lib/mysql
         state: absent
 
--
