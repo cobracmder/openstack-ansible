@@ -70,6 +70,14 @@
         dest: /etc/neutron/plugin.ini 
         state: link
 
+    - name: ensure {{ component }} configs have correct owner
+      file:
+        path: "/etc/{{ component }}"
+        recurse: yes
+        state: directory
+        group: "{{ component }}"
+        owner: "{{ component }}"
+
     - name: ensure {{ component }} logs have correct owner
       file:
         path: "/var/log/{{ component }}"
