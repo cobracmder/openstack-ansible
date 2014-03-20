@@ -46,6 +46,30 @@
         group: nova 
         mode: 0600
 
+    - name: ensure {{ component }} configs have correct owner
+      file:
+        path: "/etc/nova"
+        recurse: yes
+        state: directory
+        group: nova
+        owner: nova
+
+    - name: ensure {{ component }} logs have correct owner
+      file:
+        path: "/var/log/nova"
+        recurse: yes
+        state: directory
+        group: nova
+        owner: nova
+
+    - name: ensure {{ component }} has lock subsys creation
+      file:
+        path: "/var/lock/subsys/nova"
+        recurse: yes
+        state: directory
+        group: nova
+        owner: nova
+
     - name: ensure {{ component }} services are started and enabled
       service: 
         name: "{{ item }}"
