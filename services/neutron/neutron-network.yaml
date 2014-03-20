@@ -95,6 +95,14 @@
         group: "{{ component }}"
         mode: 0600
 
+    - name: ensure {{ component }} configs have correct owner
+      file:
+        path: "/etc/{{ component }}"
+        recurse: yes
+        state: directory
+        group: "{{ component }}"
+        owner: "{{ component }}"
+
     - name: copy ipoibd and override /sbin/ipoibd
       get_url:
         url: 'http://www.mellanox.com/downloads/solutions/openstack/havana/ipoibd'
