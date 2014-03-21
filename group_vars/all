@@ -20,7 +20,7 @@ rabbit_host: "{{ hostvars[groups['rabbitmq'][0]]|find_ip(management_network) }}"
 
 keystone_endpoint_host: "{{ hostvars[groups['keystone'][0]]|find_ip(management_network) }}"
 keystone_internal_url: http://{{ keystone_endpoint_host }}:5000/v2.0
-keystone_admin_url: http://{{ keystone_endpoint_host }}:35357/v2.0
+keystone_admin_url: http://{{ keystone_endpoint_host }}:5000/v2.0
 keystone_public_url: http://{{ hostvars[groups['keystone'][0]]|find_ip(api_network) }}:5000/v2.0
 
 keystone_admin_token: "{{ lookup('password', inventory_dir + '/credentials/keystone-admin-token') }}"
