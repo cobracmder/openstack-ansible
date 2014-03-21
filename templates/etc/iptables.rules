@@ -1,12 +1,58 @@
+*mangle
+:PREROUTING ACCEPT [19356:15795565]
+:INPUT ACCEPT [19356:15795565]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [18394:2163273]
+:POSTROUTING ACCEPT [18394:2163273]
+:nova-api-POSTROUTING - [0:0]
+-A POSTROUTING -j nova-api-POSTROUTING 
+COMMIT
 *nat
-:PREROUTING ACCEPT [0:0]
-:INPUT ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
-:POSTROUTING ACCEPT [0:0]
--A POSTROUTING -s {{ external_network }} -j MASQUERADE
+:PREROUTING ACCEPT [10:520]
+:POSTROUTING ACCEPT [2633:161826]
+:OUTPUT ACCEPT [2633:161826]
+:nova-api-OUTPUT - [0:0]
+:nova-api-POSTROUTING - [0:0]
+:nova-api-PREROUTING - [0:0]
+:nova-api-float-snat - [0:0]
+:nova-api-snat - [0:0]
+:nova-postrouting-bottom - [0:0]
+-A PREROUTING -j nova-api-PREROUTING 
+-A POSTROUTING -j nova-api-POSTROUTING 
+-A POSTROUTING -j nova-postrouting-bottom 
+-A OUTPUT -j nova-api-OUTPUT 
+-A nova-api-snat -j nova-api-float-snat 
+-A nova-postrouting-bottom -j nova-api-snat 
 COMMIT
 *filter
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [805:93230]
+:nova-api-FORWARD - [0:0]
+:nova-api-INPUT - [0:0]
+:nova-api-OUTPUT - [0:0]
+:nova-api-local - [0:0]
+:nova-filter-top - [0:0]
+-A INPUT -j nova-api-INPUT 
+-A INPUT -p tcp -m multiport --dports 3260,8776 -m comment --comment "001 cinder incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 80 -m comment --comment "001 horizon incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 9292 -m comment --comment "001 glance incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 5000,35357 -m comment --comment "001 keystone incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 3306 -m comment --comment "001 mysql incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 6080 -m comment --comment "001 novncproxy incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 8773,8774,8775 -m comment --comment "001 novaapi incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 9696 -m comment --comment "001 neutron incoming" -j ACCEPT 
+-A INPUT -p tcp -m multiport --dports 5672 -m comment --comment "001 rabbit incoming" -j ACCEPT 
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+-A INPUT -p icmp -j ACCEPT 
+-A INPUT -i lo -j ACCEPT 
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT 
+-A INPUT -j REJECT --reject-with icmp-host-prohibited 
+-A FORWARD -j nova-filter-top 
+-A FORWARD -j nova-api-FORWARD 
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited 
+-A OUTPUT -j nova-filter-top 
+-A OUTPUT -j nova-api-OUTPUT 
+-A nova-api-INPUT -p tcp -m tcp --dport 8775 -j ACCEPT 
+-A nova-filter-top -j nova-api-local 
 COMMIT
