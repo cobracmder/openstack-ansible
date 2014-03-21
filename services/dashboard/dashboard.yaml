@@ -7,7 +7,7 @@
     component: dashboard
     packages:
       - memcached
-      - python-memchached
+      - python-memcached
       - mod_wsgi
       - "openstack-{{ component }}"
     services:
